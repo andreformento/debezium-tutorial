@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 services:
   zookeeper:
     image: debezium/zookeeper:0.9.5.Final
@@ -23,6 +23,10 @@ services:
      - MYSQL_ROOT_PASSWORD=debezium
      - MYSQL_USER=mysqluser
      - MYSQL_PASSWORD=mysqlpw
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
   connect-base:
     build: ./connect-base/
     image: andreformento/connect-base:0.9.5.Final
@@ -37,7 +41,8 @@ services:
      - kafka
      - mysql
     depends_on:
-     - connect-base
+      mysql:
+        condition: service_healthy
     environment:
      - BOOTSTRAP_SERVERS=kafka:9092
      - GROUP_ID=1
