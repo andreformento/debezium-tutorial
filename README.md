@@ -6,13 +6,13 @@ Just an example of debezium tutorial with MySQL
 ```shell
 make lets-go
 ```
+- List topics
+```shell
+make list-topics
+```
 - Consume messages from a Debezium topic
 ```shell
-docker-compose exec kafka /kafka/bin/kafka-console-consumer.sh \
-    --bootstrap-server kafka:9092 \
-    --from-beginning \
-    --property print.key=true \
-    --topic dbserver1.inventory.customers
+make consume-topic TOPIC_NAME=dbserver1.inventory.addresses
 ```
 
 - Stop and clear all
