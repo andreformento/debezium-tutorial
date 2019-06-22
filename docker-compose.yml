@@ -30,11 +30,9 @@ services:
   connect-base:
     build: ./connect-base/
     image: andreformento/connect-base:0.9.5.Final
-    #image: debezium/connect-base:0.9.5.Final
   connect:
     build: ./connect/
     image: andreformento/connect:0.9.5.Final
-    #image: debezium/connect:0.9.5.Final
     ports:
      - 8083:8083
     links:
