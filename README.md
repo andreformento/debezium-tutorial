@@ -27,21 +27,21 @@ make clear
 
 - Start Zookeeper
 ```shell
-docker run -it --rm --name zookeeper -p 2181:2181 -p 2888:2888 -p 3888:3888 debezium/zookeeper:0.9
+docker run -it --rm --name zookeeper -p 2181:2181 -p 2888:2888 -p 3888:3888 debezium/zookeeper:0.9.5.Final
 ```
 
 - Start Kafka
 ```shell
-docker run -it --rm --name kafka -p 9092:9092 --link zookeeper:zookeeper debezium/kafka:0.9
+docker run -it --rm --name kafka -p 9092:9092 --link zookeeper:zookeeper debezium/kafka:0.9.5.Final
 ```
 - MySQL
   - Build
 ```shell
-docker build -t andreformento/debezium-mysql:0.9 mysql-image/
+docker build -t andreformento/debezium-mysql:0.9.5.Final mysql-image/
 ```
   - Start
 ```shell
-docker run -it --rm --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=debezium -e MYSQL_USER=mysqluser -e MYSQL_PASSWORD=mysqlpw andreformento/debezium-mysql:0.9
+docker run -it --rm --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=debezium -e MYSQL_USER=mysqluser -e MYSQL_PASSWORD=mysqlpw andreformento/debezium-mysql:0.9.5.Final
 ```
   - Connect
 ```shell
@@ -50,7 +50,7 @@ docker exec -it mysql mysql -u mysqluser -pmysqlpw --database inventory
 
 - Kafka connect
 ```shell
-docker run -it --rm --name connect -p 8083:8083 -e GROUP_ID=1 -e CONFIG_STORAGE_TOPIC=my_connect_configs -e OFFSET_STORAGE_TOPIC=my_connect_offsets -e STATUS_STORAGE_TOPIC=my_connect_statuses --link zookeeper:zookeeper --link kafka:kafka --link mysql:mysql debezium/connect:0.9
+docker run -it --rm --name connect -p 8083:8083 -e GROUP_ID=1 -e CONFIG_STORAGE_TOPIC=my_connect_configs -e OFFSET_STORAGE_TOPIC=my_connect_offsets -e STATUS_STORAGE_TOPIC=my_connect_statuses --link zookeeper:zookeeper --link kafka:kafka --link mysql:mysql debezium/connect:0.9.5.Final
 ```
 
 - Monitor the MySQL database
