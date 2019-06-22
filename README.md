@@ -41,12 +41,40 @@ docker run -it --rm --name kafka -p 9092:9092 --link zookeeper:zookeeper debeziu
 
 - Kafka connect
 ```shell
-docker run -it --rm --name connect -p 8083:8083 -e GROUP_ID=1 -e CONFIG_STORAGE_TOPIC=my_connect_configs -e OFFSET_STORAGE_TOPIC=my_connect_offsets -e STATUS_STORAGE_TOPIC=my_connect_statuses --link zookeeper:zookeeper --link kafka:kafka --link mysql:mysql debezium/connect:0.9.5.Final
+docker run -it --rm \
+           --name connect \
+           -p 8083:8083 \
+           -e GROUP_ID=1 \
+           -e CONFIG_STORAGE_TOPIC=my_connect_configs \
+           -e OFFSET_STORAGE_TOPIC=my_connect_offsets \
+           -e STATUS_STORAGE_TOPIC=my_connect_statuses \
+           --link zookeeper:zookeeper \
+           --link kafka:kafka \
+           --link mysql:mysql \
+           debezium/connect:0.9.5.Final
 ```
 
 - Monitor the MySQL database
 ```shell
-curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '{ "name": "inventory-connector", "config": { "connector.class": "io.debezium.connector.mysql.MySqlConnector", "tasks.max": "1", "database.hostname": "mysql", "database.port": "3306", "database.user": "debezium", "database.password": "dbz", "database.server.id": "184054", "database.server.name": "dbserver1", "database.whitelist": "inventory", "database.history.kafka.bootstrap.servers": "kafka:9092", "database.history.kafka.topic": "dbhistory.inventory" } }'
+curl -i -X POST \
+     -H "Accept:application/json" \
+     -H "Content-Type:application/json" \
+     localhost:8083/connectors/ \
+     -d '{"name": "inventory-connector",
+          "config": {
+              "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+              "tasks.max": "1",
+              "database.hostname": "mysql",
+              "database.port": "3306",
+              "database.user": "debezium",
+              "database.password": "dbz",
+              "database.server.id": "184054",
+              "database.server.name": "dbserver1",
+              "database.whitelist": "inventory",
+              "database.history.kafka.bootstrap.servers": "kafka:9092",
+              "database.history.kafka.topic": "dbhistory.inventory"
+          }
+      }'
 ```
 - Clean up
 ```shell
