@@ -6,6 +6,18 @@ Just an example of debezium tutorial with MySQL
 ```shell
 make lets-go
 ```
+
+- List Kafka topics
+```shell
+docker-compose exec kafka /kafka/bin/kafka-topics.sh --list \
+    --bootstrap-server kafka:9092
+```
+
+- Show connectors
+```shell
+curl -H "Accept:application/json" localhost:8083/connectors/
+```
+
 - Consume messages from a Debezium topic
 ```shell
 docker-compose exec kafka /kafka/bin/kafka-console-consumer.sh \
@@ -68,3 +80,4 @@ docker stop mysqlterm watcher connect mysql kafka zookeeper
 
 - https://debezium.io/blog/tags/example/
 - https://debezium.io/blog/2018/05/24/querying-debezium-change-data-eEvents-with-ksql/
+- https://github.com/confluentinc/demo-scene/blob/master/ksql-workshop/docker-compose.yml
