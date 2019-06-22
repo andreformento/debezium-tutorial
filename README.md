@@ -20,6 +20,11 @@ docker-compose exec kafka /kafka/bin/kafka-console-consumer.sh \
 make clear
 ```
 
+- Show connectors
+```shell
+watch curl -H "Accept:application/json" localhost:8083/connectors/
+```
+
 [Reference](https://github.com/debezium/debezium-examples/blob/master/tutorial/README.md)
 
 
@@ -37,7 +42,7 @@ docker run -it --rm --name kafka -p 9092:9092 --link zookeeper:zookeeper debeziu
 - MySQL
   - Build
 ```shell
-docker build -t andreformento/debezium-mysql:0.9 mysql-image/
+docker build -t andreformento/debezium-mysql:0.9 debezium-mysql/
 ```
   - Start
 ```shell

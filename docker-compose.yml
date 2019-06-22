@@ -1,13 +1,13 @@
 version: '2'
 services:
   zookeeper:
-    image: debezium/zookeeper:0.9
+    image: debezium/zookeeper:0.9.5.Final
     ports:
      - 2181:2181
      - 2888:2888
      - 3888:3888
   kafka:
-    image: debezium/kafka:0.9
+    image: debezium/kafka:0.9.5.Final
     ports:
      - 9092:9092
     links:
@@ -15,8 +15,8 @@ services:
     environment:
      - ZOOKEEPER_CONNECT=zookeeper:2181
   mysql:
-    build: ./mysql-image/
-    image: andreformento/debezium-mysql:0.9
+    build: ./debezium-mysql/
+    image: andreformento/debezium-mysql:0.9.5.Final
     ports:
      - 3306:3306
     environment:
@@ -24,7 +24,9 @@ services:
      - MYSQL_USER=mysqluser
      - MYSQL_PASSWORD=mysqlpw
   connect:
-    image: debezium/connect:0.9
+    #build: ./debezium-mysql-connector/
+    #image: andreformento/debezium-mysql-connector:0.9.5.Final
+    image: debezium/connect:0.9.5.Final
     ports:
      - 8083:8083
     links:
@@ -36,6 +38,19 @@ services:
      - CONFIG_STORAGE_TOPIC=my_connect_configs
      - OFFSET_STORAGE_TOPIC=my_connect_offsets
      - STATUS_STORAGE_TOPIC=my_connect_statuses
+     #- CONNECT_NAME=inventory-connector
+     #- CONNECT_CONNECTOR_CLASS=io.debezium.connector.mysql.MySqlConnector
+     #- CONNECT_TASKS_MAX=1
+     #- CONNECT_DATABASE_HOSTNAME=mysql
+     #- CONNECT_DATABASE_PORT=3306
+     #- CONNECT_DATABASE_USER=debezium
+     #- CONNECT_DATABASE_PASSWORD=dbz
+     #- CONNECT_DATABASE_SERVER_ID=184054
+     #- CONNECT_DATABASE_SERVER_NAME=dbserver1
+     #- CONNECT_DATABASE_WHITELIST=inventory
+     #- CONNECT_DATABASE_HISTORY_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+     #- CONNECT_DATABASE_HISTORY_KAFKA_TOPIC=dbhistory.inventory"
     volumes:
-     - ${PWD}/local-connect-standalone.properties:/opt/configs/connect-standalone.properties
-     - ${PWD}/local-debezium.properties:/opt/configs/debezium.properties
+     - ${PWD}/debezium-mysql-connector/connect-standalone.properties:/kafka/config/connect-standalone.properties
+    # - ${PWD}/debezium-mysql-connector/debezium.properties:/kafka/config/debezium.properties
+    # - ${PWD}/debezium-mysql-connector/log4j.properties:/kafka/config/log4j.properties
