@@ -36,7 +36,7 @@ docker run -it --rm --name kafka -p 9092:9092 --link zookeeper:zookeeper debeziu
 ```
 - MySQL
   - Build 
-`docker build -t andreformento/debezium-mysql:0.9.5.Final mysql-image/`
+```shell docker build -t andreformento/debezium-mysql:0.9.5.Final mysql-image/`
   - Start `docker run -it --rm --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=debezium -e MYSQL_USER=mysqluser -e MYSQL_PASSWORD=mysqlpw andreformento/debezium-mysql:0.9.5.Final`
   - Connect `docker exec -it mysql mysql -u mysqluser -pmysqlpw --database inventory`
 
