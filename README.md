@@ -35,8 +35,7 @@ docker run -it --rm --name zookeeper -p 2181:2181 -p 2888:2888 -p 3888:3888 debe
 docker run -it --rm --name kafka -p 9092:9092 --link zookeeper:zookeeper debezium/kafka:0.9.5.Final
 ```
 - MySQL
-  - Build 
-```shell
+  - Build  ```shell
 docker build -t andreformento/debezium-mysql:0.9.5.Final mysql-image/
 ```
   - Start `docker run -it --rm --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=debezium -e MYSQL_USER=mysqluser -e MYSQL_PASSWORD=mysqlpw andreformento/debezium-mysql:0.9.5.Final`
