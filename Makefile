@@ -29,3 +29,9 @@ consume-topic: # params: TOPIC_NAME
        --property print.key=true \
        --property key.separator="  #### ->   " \
        --from-beginning
+
+open-mysql:
+	@docker-compose exec mysql bash -c 'mysql -u $$MYSQL_USER -p$$MYSQL_PASSWORD inventory'
+
+open-ksql:
+	@docker-compose exec ksql-cli ksql http://ksql-server:8088

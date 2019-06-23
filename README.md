@@ -1,89 +1,58 @@
 # debezium-tutorial
 Just an example of debezium tutorial with MySQL
 
-## Using Docker Compose
-- Start all
-```shell
-make lets-go
+## Start all applications with docker-compose
+- Start all `make lets-go`
+  - List topics `make list-topics`
+  - Consume messages from a Debezium topic `make consume-topic TOPIC_NAME=dbserver1.inventory.addresses`
+  - Go to MySQL cli `make open-mysql`
+  - Go to KSQL cli `make open-ksql`
+- Stop and clear all `make clear`
+
+## Join events
+- Open cli `make open-ksql`
+- List topics `LIST TOPICS;`
+
+KSQL processing by default starts with latest offsets. We want to process the events already in the topics so we switch processing from earliest offsets.
+
+- Configure offset `SET 'auto.offset.reset' = 'earliest';`
+- Create base streams
+```sql
+CREATE STREAM orders_from_debezium (order_number integer, order_date string, purchaser integer, quantity integer, product_id integer) \
+    WITH (KAFKA_TOPIC='dbserver1.inventory.orders',VALUE_FORMAT='json');
+
+CREATE STREAM customers_from_debezium (id integer, first_name string, last_name string, email string) \
+    WITH (KAFKA_TOPIC='dbserver1.inventory.customers',VALUE_FORMAT='json');
+
+CREATE STREAM orders WITH (KAFKA_TOPIC='ORDERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
+    as SELECT * FROM orders_from_debezium PARTITION BY PURCHASER;
+
+CREATE STREAM customers_stream WITH (KAFKA_TOPIC='CUSTOMERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
+    as SELECT * FROM customers_from_debezium PARTITION BY ID;
+
+CREATE TABLE customers (id integer, first_name string, last_name string, email string) \
+    WITH (KAFKA_TOPIC='CUSTOMERS_REPART',VALUE_FORMAT='json',KEY='id');
 ```
-- List topics
-```shell
-make list-topics
+- Show first `SELECT * FROM orders_from_debezium LIMIT 1;`
+- Create join
+```sql
+CREATE STREAM customers_orders_stream WITH (KAFKA_TOPIC='CUSTOMERS_ORDERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
+    as SELECT order_number,quantity,customers.first_name,customers.last_name \
+  FROM orders \
+       left join customers on orders.purchaser=customers.id;
+
+SELECT * FROM customers_orders_stream;
 ```
-- Consume messages from a Debezium topic
-```shell
-make consume-topic TOPIC_NAME=dbserver1.inventory.addresses
-```
-
-- Stop and clear all
-```shell
-make clear
-```
-
-[Reference](https://github.com/debezium/debezium-examples/blob/master/tutorial/README.md)
-
-
-## Using just Docker
-
-- Start Zookeeper
-```shell
-docker run -it --rm --name zookeeper -p 2181:2181 -p 2888:2888 -p 3888:3888 debezium/zookeeper:0.9.5.Final
-```
-
-- Start Kafka
-```shell
-docker run -it --rm --name kafka -p 9092:9092 --link zookeeper:zookeeper debezium/kafka:0.9.5.Final
-```
-- MySQL
-  - Build `docker build -t andreformento/debezium-mysql:0.9.5.Final mysql-image/`
-  - Start `docker run -it --rm --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=debezium -e MYSQL_USER=mysqluser -e MYSQL_PASSWORD=mysqlpw andreformento/debezium-mysql:0.9.5.Final`
-  - Connect `docker exec -it mysql mysql -u mysqluser -pmysqlpw --database inventory`
-
-- Kafka connect
-```shell
-docker run -it --rm \
-           --name connect \
-           -p 8083:8083 \
-           -e GROUP_ID=1 \
-           -e CONFIG_STORAGE_TOPIC=my_connect_configs \
-           -e OFFSET_STORAGE_TOPIC=my_connect_offsets \
-           -e STATUS_STORAGE_TOPIC=my_connect_statuses \
-           --link zookeeper:zookeeper \
-           --link kafka:kafka \
-           --link mysql:mysql \
-           debezium/connect:0.9.5.Final
+- Open a new terminal, go to MySQL `make open-mysql` and change values
+```sql
+INSERT INTO orders VALUES(default,NOW(), 1003,5,101);
+UPDATE customers SET first_name='Annie' WHERE id=1004;
+UPDATE orders SET quantity=20 WHERE order_number=10004;
 ```
 
-- Monitor the MySQL database
-```shell
-curl -i -X POST \
-     -H "Accept:application/json" \
-     -H "Content-Type:application/json" \
-     localhost:8083/connectors/ \
-     -d '{"name": "inventory-connector",
-          "config": {
-              "connector.class": "io.debezium.connector.mysql.MySqlConnector",
-              "tasks.max": "1",
-              "database.hostname": "mysql",
-              "database.port": "3306",
-              "database.user": "debezium",
-              "database.password": "dbz",
-              "database.server.id": "184054",
-              "database.server.name": "dbserver1",
-              "database.whitelist": "inventory",
-              "database.history.kafka.bootstrap.servers": "kafka:9092",
-              "database.history.kafka.topic": "dbhistory.inventory"
-          }
-      }'
-```
-- Clean up
-```shell
-docker stop mysqlterm watcher connect mysql kafka zookeeper
-```
+## References
 
-[Reference](https://debezium.io/docs/tutorial)
-
-### Anothers examples
-
+- https://debezium.io/docs/tutorial
 - https://debezium.io/blog/tags/example/
 - https://debezium.io/blog/2018/05/24/querying-debezium-change-data-eEvents-with-ksql/
+- https://github.com/debezium/debezium-examples/blob/master/tutorial/README.md
