@@ -11,7 +11,9 @@ Just an example of debezium tutorial with MySQL
 ## Join events
 - Open cli `docker-compose exec ksql-cli ksql http://ksql-server:8088`
 - List topics `LIST TOPICS;`
+
 KSQL processing by default starts with latest offsets. We want to process the events already in the topics so we switch processing from earliest offsets.
+
 - Configure offset `SET 'auto.offset.reset' = 'earliest';`
 - Create streams
 ```shell
