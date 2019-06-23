@@ -29,3 +29,6 @@ consume-topic: # params: TOPIC_NAME
        --property print.key=true \
        --property key.separator="  #### ->   " \
        --from-beginning
+
+open-mysql:
+	@docker-compose exec mysql bash -c 'mysql -u $$MYSQL_USER -p$$MYSQL_PASSWORD inventory'
