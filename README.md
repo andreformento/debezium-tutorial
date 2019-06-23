@@ -17,7 +17,7 @@ KSQL processing by default starts with latest offsets. We want to process the ev
 
 - Configure offset `SET 'auto.offset.reset' = 'earliest';`
 - Create base streams
-```shell
+```sql
 CREATE STREAM orders_from_debezium (order_number integer, order_date string, purchaser integer, quantity integer, product_id integer) \
     WITH (KAFKA_TOPIC='dbserver1.inventory.orders',VALUE_FORMAT='json');
 
@@ -35,7 +35,7 @@ CREATE TABLE customers (id integer, first_name string, last_name string, email s
 ```
 - Show first `SELECT * FROM orders_from_debezium LIMIT 1;`
 - Create join
-```shell
+```sql
 CREATE STREAM customers_orders_stream WITH (KAFKA_TOPIC='CUSTOMERS_ORDERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
     as SELECT order_number,quantity,customers.first_name,customers.last_name \
   FROM orders \
@@ -44,7 +44,7 @@ CREATE STREAM customers_orders_stream WITH (KAFKA_TOPIC='CUSTOMERS_ORDERS_REPART
 SELECT * FROM customers_orders_stream;
 ```
 - Open a new terminal, go to MySQL `make open-mysql` and change values
-```shell
+```sql
 INSERT INTO orders VALUES(default,NOW(), 1003,5,101);
 UPDATE customers SET first_name='Annie' WHERE id=1004;
 UPDATE orders SET quantity=20 WHERE order_number=10004;
