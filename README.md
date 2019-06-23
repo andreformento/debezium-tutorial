@@ -6,6 +6,7 @@ Just an example of debezium tutorial with MySQL
   - List topics `make list-topics`
   - Consume messages from a Debezium topic `make consume-topic TOPIC_NAME=dbserver1.inventory.addresses`
   - Go to MySQL cli `make open-mysql`
+  - Go to KSQL cli `make open-ksql`
 - Stop and clear all `make clear`
 
 ## Join events

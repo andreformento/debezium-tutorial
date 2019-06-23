@@ -99,7 +99,7 @@ CREATE TABLE orders (
 ) AUTO_INCREMENT = 10001;
 
 INSERT INTO orders
-VALUES (default, '2016-01-16', 1001, 1, 102),
-       (default, '2016-01-17', 1002, 2, 105),
-       (default, '2016-02-19', 1002, 2, 106),
-       (default, '2016-02-21', 1003, 1, 107);
+VALUES (default, '2019-02-16', 1001, 1, 102),
+       (default, '2019-04-17', 1002, 2, 105),
+       (default, '2019-05-19', 1002, 2, 106),
+       (default, '2019-06-21', 1003, 1, 107);
