@@ -15,7 +15,7 @@ Just an example of debezium tutorial with MySQL
 KSQL processing by default starts with latest offsets. We want to process the events already in the topics so we switch processing from earliest offsets.
 
 - Configure offset `SET 'auto.offset.reset' = 'earliest';`
-- Create streams
+- Create base streams
 ```shell
 CREATE STREAM orders_from_debezium (order_number integer, order_date string, purchaser integer, quantity integer, product_id integer) \
     WITH (KAFKA_TOPIC='dbserver1.inventory.orders',VALUE_FORMAT='json');
@@ -28,8 +28,23 @@ CREATE STREAM orders WITH (KAFKA_TOPIC='ORDERS_REPART',VALUE_FORMAT='json',PARTI
 
 CREATE STREAM customers_stream WITH (KAFKA_TOPIC='CUSTOMERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
     as SELECT * FROM customers_from_debezium PARTITION BY ID;
+
+CREATE TABLE customers (id integer, first_name string, last_name string, email string) \
+    WITH (KAFKA_TOPIC='CUSTOMERS_REPART',VALUE_FORMAT='json',KEY='id');
 ```
-- Select `SELECT * FROM orders_from_debezium LIMIT 1;`
+- Show first `SELECT * FROM orders_from_debezium LIMIT 1;`
+- Create join
+```shell
+SELECT order_number,quantity,customers.first_name,customers.last_name \
+  FROM orders \
+       left join customers on orders.purchaser=customers.id;
+```
+- Open a new terminal, go to MySQL `make open-mysql` and change values
+```shell
+INSERT INTO orders VALUES(default,NOW(), 1003,5,101);
+UPDATE customers SET first_name='Annie' WHERE id=1004;
+UPDATE orders SET quantity=20 WHERE order_number=10004;
+```
 
 ## References
 
