@@ -40,10 +40,8 @@ services:
      - CONFIG_STORAGE_TOPIC=my_connect_configs
      - OFFSET_STORAGE_TOPIC=my_connect_offsets
      - STATUS_STORAGE_TOPIC=my_connect_statuses
-    volumes:
-     - ${PWD}/connector-initializer.sh:/usr/local/bin/connector-initializer.sh
-    command:
-     - connector-initializer.sh
+    command: >
+      start && echo "abc"
 
   # KSQL
   ksql-server:
