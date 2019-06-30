@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3.4'
 services:
   zookeeper:
     image: debezium/zookeeper:0.9.5.Final
@@ -40,8 +40,9 @@ services:
      - CONFIG_STORAGE_TOPIC=my_connect_configs
      - OFFSET_STORAGE_TOPIC=my_connect_offsets
      - STATUS_STORAGE_TOPIC=my_connect_statuses
-    command: >
-      start && echo "abc"
+    volumes:
+     - ${PWD}/connect:/opt/connect/
+    entrypoint: /opt/connect/connect-entrypoint.sh
 
   # KSQL
   ksql-server:

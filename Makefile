@@ -7,7 +7,8 @@ stop:
 	@docker-compose down
 
 clear:
-	@docker-compose rm -f -s
+	@docker-compose down -t 0
+	@docker-compose rm -f
 	@echo "Removing Kafka state dir [/tmp/kafka-streams/]"
 	@rm -rf /tmp/kafka-streams/
 
@@ -35,3 +36,6 @@ open-mysql:
 
 open-ksql:
 	@docker-compose exec ksql-cli ksql http://ksql-server:8088
+
+listen-connectors:
+	@watch -n .5 curl -H "Accept:application/json" localhost:8083/connectors/
