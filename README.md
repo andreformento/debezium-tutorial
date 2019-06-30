@@ -38,8 +38,8 @@ CREATE TABLE customers (id integer, first_name string, last_name string, email s
 ```sql
 CREATE STREAM customers_orders_stream WITH (KAFKA_TOPIC='CUSTOMERS_ORDERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
     as SELECT order_number,quantity,customers.first_name,customers.last_name \
-  FROM orders \
-       left join customers on orders.purchaser=customers.id;
+         FROM orders \
+    LEFT JOIN customers ON orders.purchaser=customers.id;
 
 SELECT * FROM customers_orders_stream;
 ```
