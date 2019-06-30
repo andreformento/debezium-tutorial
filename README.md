@@ -40,12 +40,18 @@ CREATE STREAM customers_orders_stream WITH (KAFKA_TOPIC='CUSTOMERS_ORDERS_REPART
     as SELECT order_number,quantity,customers.first_name,customers.last_name \
          FROM orders \
     LEFT JOIN customers ON orders.purchaser=customers.id;
+```
 
+- Listening all topics _(open each on a new tab)_
+```sql
+SELECT * FROM orders_from_debezium;
+SELECT * FROM customers_from_debezium;
 SELECT * FROM customers_orders_stream;
 ```
+
 - Open a new terminal, go to MySQL `make open-mysql` and change values
 ```sql
-INSERT INTO orders VALUES(default,NOW(), 1003,5,101);
+INSERT INTO orders (order_number,order_date,purchaser,quantity,product_id) VALUES(default,NOW(),1003,5,101);
 UPDATE customers SET first_name='Annie' WHERE id=1004;
 UPDATE orders SET quantity=20 WHERE order_number=10004;
 ```
