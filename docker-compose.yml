@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3.4'
 services:
   zookeeper:
     image: debezium/zookeeper:0.9.5.Final
@@ -27,20 +27,13 @@ services:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
-  connect-base:
-    build: ./connect-base/
-    image: andreformento/connect-base:0.9.5.Final
   connect:
-    build: ./connect/
-    image: andreformento/connect:0.9.5.Final
+    image: debezium/connect:0.9.5.Final
     ports:
      - 8083:8083
     links:
      - kafka
      - mysql
-    depends_on:
-      mysql:
-        condition: service_healthy
     environment:
      - BOOTSTRAP_SERVERS=kafka:9092
      - GROUP_ID=1
@@ -48,7 +41,8 @@ services:
      - OFFSET_STORAGE_TOPIC=my_connect_offsets
      - STATUS_STORAGE_TOPIC=my_connect_statuses
     volumes:
-     - ${PWD}/connect-config:/connect-config/
+     - ${PWD}/connect:/opt/connect/
+    entrypoint: /opt/connect/connect-entrypoint.sh
 
   # KSQL
   ksql-server:
