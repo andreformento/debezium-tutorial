@@ -1,13 +1,13 @@
 version: '3.4'
 services:
   zookeeper:
-    image: debezium/zookeeper:0.9.5.Final
+    image: debezium/zookeeper:1.0
     ports:
      - 2181:2181
      - 2888:2888
      - 3888:3888
   kafka:
-    image: debezium/kafka:0.9.5.Final
+    image: debezium/kafka:1.0
     ports:
      - 9092:9092
     links:
@@ -16,7 +16,7 @@ services:
      - ZOOKEEPER_CONNECT=zookeeper:2181
   mysql:
     build: ./mysql-image/
-    image: andreformento/debezium-mysql:0.9.5.Final
+    image: andreformento/debezium-mysql:1.0
     ports:
      - 3306:3306
     environment:
@@ -28,7 +28,7 @@ services:
       timeout: 20s
       retries: 10
   connect:
-    image: debezium/connect:0.9.5.Final
+    image: debezium/connect:1.0
     ports:
      - 8083:8083
     links:
@@ -46,7 +46,7 @@ services:
 
   # KSQL
   ksql-server:
-    image: confluentinc/cp-ksql-server:5.0.1
+    image: confluentinc/cp-ksql-server:5.4.1
     hostname: ksql-server
     depends_on:
       - kafka
@@ -62,7 +62,7 @@ services:
       KSQL_LISTENERS: "http://0.0.0.0:8088"
       KSQL_CACHE_MAX_BYTES_BUFFERING: 0
   ksql-cli:
-    image: confluentinc/cp-ksql-cli:5.0.1
+    image: confluentinc/cp-ksql-cli:5.4.1
     depends_on:
       - kafka
       - connect
