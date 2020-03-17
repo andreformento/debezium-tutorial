@@ -24,10 +24,12 @@ CREATE STREAM orders_from_debezium (order_number integer, order_date string, pur
 CREATE STREAM customers_from_debezium (id integer, first_name string, last_name string, email string) \
     WITH (KAFKA_TOPIC='dbserver1.inventory.customers',VALUE_FORMAT='json');
 
-CREATE STREAM orders WITH (KAFKA_TOPIC='ORDERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
+CREATE STREAM orders \
+    WITH (KAFKA_TOPIC='ORDERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
     as SELECT * FROM orders_from_debezium PARTITION BY PURCHASER;
 
-CREATE STREAM customers_stream WITH (KAFKA_TOPIC='CUSTOMERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
+CREATE STREAM customers_stream \
+    WITH (KAFKA_TOPIC='CUSTOMERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
     as SELECT * FROM customers_from_debezium PARTITION BY ID;
 
 CREATE TABLE customers (id integer, first_name string, last_name string, email string) \
@@ -36,7 +38,8 @@ CREATE TABLE customers (id integer, first_name string, last_name string, email s
 - Show first `SELECT * FROM orders_from_debezium EMIT CHANGES LIMIT 1;`
 - Create join
 ```sql
-CREATE STREAM customers_orders_stream WITH (KAFKA_TOPIC='CUSTOMERS_ORDERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
+CREATE STREAM customers_orders_stream \
+    WITH (KAFKA_TOPIC='CUSTOMERS_ORDERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
     as SELECT order_number,quantity,customers.first_name,customers.last_name \
          FROM orders \
     LEFT JOIN customers ON orders.purchaser=customers.id;
