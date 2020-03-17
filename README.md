@@ -33,7 +33,7 @@ CREATE STREAM customers_stream WITH (KAFKA_TOPIC='CUSTOMERS_REPART',VALUE_FORMAT
 CREATE TABLE customers (id integer, first_name string, last_name string, email string) \
     WITH (KAFKA_TOPIC='CUSTOMERS_REPART',VALUE_FORMAT='json',KEY='id');
 ```
-- Show first `SELECT * FROM orders_from_debezium LIMIT 1;`
+- Show first `SELECT * FROM orders_from_debezium EMIT CHANGES LIMIT 1;`
 - Create join
 ```sql
 CREATE STREAM customers_orders_stream WITH (KAFKA_TOPIC='CUSTOMERS_ORDERS_REPART',VALUE_FORMAT='json',PARTITIONS=1) \
@@ -44,9 +44,9 @@ CREATE STREAM customers_orders_stream WITH (KAFKA_TOPIC='CUSTOMERS_ORDERS_REPART
 
 - Listening all topics _(open each on a new tab)_
 ```sql
-SELECT * FROM orders_from_debezium;
-SELECT * FROM customers_from_debezium;
-SELECT * FROM customers_orders_stream;
+SELECT * FROM orders_from_debezium EMIT CHANGES;
+SELECT * FROM customers_from_debezium EMIT CHANGES;
+SELECT * FROM customers_orders_stream EMIT CHANGES;
 ```
 
 - Open a new terminal, go to MySQL `make open-mysql` and change values
